@@ -1,60 +1,30 @@
+#include "CrashRecord.h"
 #include <iostream>
-#include <fstream>
-#include <sstream>
-#include <vector>
-#include <string>
-#include <iomanip>
-#include <ctime>
-
-using namespace std;
-
-string convertToUTC(const string& date, const string& time) {
-    struct tm tm = {};
-    stringstream ss(date + " " + time);
-    ss >> get_time(&tm, "%m/%d/%Y %H:%M");
-
-    time_t local_time = mktime(&tm);
-    tm = *gmtime(&local_time);
-
-    char buffer[80];
-    strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M:%S", &tm);
-    return string(buffer);
-}
 
 int main() {
-    ifstream file("crash_data.csv");
-    if (!file.is_open()) {
-        cerr << "Error opening file" << endl;
-        return 1;
+    // Create CSV parser and load data
+    CSVParser parser = CSVParser("crash_data.csv");
+    parser.loadCSV();
+
+    // Define geographic location (latitude and longitude range)
+    double min_lat = 40.5, max_lat = 40.9;
+    double min_lon = -74.0, max_lon = -73.7;
+
+    // Define time range (in UTC) with both date and time
+    std::string start_datetime = "2021-02-14 12:00";
+    std::string end_datetime = "2026-02-14 14:00";
+
+    // Get filtered records
+    std::vector<CrashRecord> results = parser.getRecordsByLocationAndTime(min_lat, max_lat, min_lon, max_lon, start_datetime, end_datetime);
+    std::cout << "Number of records found: " << results.size() << std::endl;
+    // Display results
+    
+    for (const auto& record : results) {
+        std::cout << "Lat: " << record.getLatitude() 
+                  << ", Lon: " << record.getLongitude() 
+                  << ", DateTime: " << record.getCrashDateTime() 
+                  << std::endl;
     }
 
-    string line;
-    // Read the header line
-    getline(file, line);
-
-    int count = 0;
-    while (getline(file, line) && count < 10) {
-        stringstream ss(line);
-        string item;
-        vector<string> row;
-
-        while (getline(ss, item, ',')) {
-            row.push_back(item);
-        }
-
-        if (row.size() >= 6) {
-            string crash_date = row[0];
-            string crash_time = row[1];
-            string latitude = row[4];
-            string longitude = row[5];
-
-            string utc_time = convertToUTC(crash_date, crash_time);
-
-            cout << "Crash Time (UTC): " << utc_time << ", Longitude: " << longitude << ", Latitude: " << latitude << endl;
-            count++;
-        }
-    }
-
-    file.close();
     return 0;
 }
