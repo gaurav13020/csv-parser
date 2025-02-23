@@ -1,0 +1,24 @@
+Types of queries /to focus on
+
+time based  : 1 : make epoch from date + time 
+person killed/ injured
+BORough wise
+
+
+1:raw >> processed (time + date) >> 
+
+
+Last stage
+
+Improvements : 
+Enum for BORough : 
+Int whereever necessary :Zipcode (16 bytes) (short)
+Location : redundant
+float/double : 
+radius of lat long : 
+
+
+
+1 : Basic reader and query processor
+2 : Parallelized
+3 : open ground
