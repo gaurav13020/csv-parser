@@ -23,6 +23,8 @@ set(SOURCES
     csv-parser-project/src/CSVParserStage1.h
     csv-parser-project/src/CSVParserStage2.h
     csv-parser-project/src/CSVParserBase.h
+    csv-parser-project/src/CSVParserStage3.h
+    csv-parser-project/src/CrashRecordPolished.h
     csv-parser-project/src/RawRecord.h 
 
 )

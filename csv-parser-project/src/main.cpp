@@ -27,9 +27,9 @@ int main(int argc, char *argv[]) {
         case 2:
             parser = make_unique<CSVParserStage2>();
             break;
-        // case 3:
-        //     parser = make_unique<CSVParserStage3>();
-        //     break;
+        case 3:
+            parser = make_unique<CSVParserStage3>();
+            break;
         default:
             cerr << "Invalid stage: " << stage << endl;
             return 1;
