@@ -4,7 +4,7 @@
 #include <iostream>
 #include <stdexcept>
 
-// CrashRecord constructor definition
+// CrashRecord constructor define
 CrashRecord::CrashRecord(double lat, double lon, const std::string& datetime) 
     : latitude(lat), longitude(lon), crash_datetime(datetime) {}
 
