@@ -12,6 +12,8 @@ public:
         std::vector<RawRecord> result;
         long startEpoch = convertToEpoch(startDateUTC);
         long endEpoch = convertToEpoch(endDateUTC);
+        std::cout << "Querying data... startDateUTC: " << startDateUTC << ", endDateUTC: " << endDateUTC << " Borough List : " << commaSeparatedBoroughList << "distance from lat,long" << distance << std::endl;
+        std::cout << "size of polishedRecords : " << records.size() << std::endl;
 
         std::vector<std::string> boroughs;
         std::istringstream ssBorough(commaSeparatedBoroughList);
@@ -57,7 +59,8 @@ public:
                 continue;
             }
         }
-
+        std::cout << "Number of records found: " << result.size() << std::endl;
+        
         return result;
     }
 };

@@ -62,6 +62,16 @@ private:
         return fields;
     }
 
+    // Helper function to convert Borough enum to string
+    std::string getBoroughString(Borough borough) {
+        for (const auto& pair : CrashRecordPolished::boroughMap) {
+            if (pair.second == borough) {
+                return pair.first;
+            }
+        }
+        return "UNKNOWN_BOROUGH";
+    }
+
 public:
     void load(const std::string& filename) override {
         std::ifstream file(filename);
@@ -73,8 +83,14 @@ public:
         std::string line;
         std::getline(file, line); // Skip header line
 
+        std::vector<std::string> lines;
         while (std::getline(file, line)) {
-            std::vector<std::string> fields = parseCSVLine(line);
+            lines.push_back(line);
+        }
+
+        #pragma omp parallel for
+        for (size_t i = 0; i < lines.size(); ++i) {
+            std::vector<std::string> fields = parseCSVLine(lines[i]);
 
             try {
                 float latitude = fields.size() > 4 && !fields[4].empty() ? std::stof(fields[4]) : 0.0f;
@@ -82,38 +98,43 @@ public:
                 short zipCode = fields.size() > 3 && !fields[3].empty() && std::all_of(fields[3].begin(), fields[3].end(), ::isdigit) ? static_cast<short>(std::stoi(fields[3])) : 0;
                 std::string borough = fields.size() > 2 ? fields[2] : "";
 
-                polishedRecords.addRecord(
-                    fields.size() > 0 ? fields[0] : "",
-                    fields.size() > 1 ? fields[1] : "",
-                    borough,
-                    zipCode,
-                    latitude,
-                    longitude,
-                    fields.size() > 6 ? fields[6] : "",
-                    fields.size() > 7 ? fields[7] : "",
-                    fields.size() > 8 ? fields[8] : "",
-                    fields.size() > 9 && !fields[9].empty() && std::all_of(fields[9].begin(), fields[9].end(), ::isdigit) ? std::stoi(fields[9]) : 0,
-                    fields.size() > 10 && !fields[10].empty() && std::all_of(fields[10].begin(), fields[10].end(), ::isdigit) ? std::stoi(fields[10]) : 0,
-                    fields.size() > 11 && !fields[11].empty() && std::all_of(fields[11].begin(), fields[11].end(), ::isdigit) ? std::stoi(fields[11]) : 0,
-                    fields.size() > 12 && !fields[12].empty() && std::all_of(fields[12].begin(), fields[12].end(), ::isdigit) ? std::stoi(fields[12]) : 0,
-                    fields.size() > 13 && !fields[13].empty() && std::all_of(fields[13].begin(), fields[13].end(), ::isdigit) ? std::stoi(fields[13]) : 0,
-                    fields.size() > 14 && !fields[14].empty() && std::all_of(fields[14].begin(), fields[14].end(), ::isdigit) ? std::stoi(fields[14]) : 0,
-                    fields.size() > 15 && !fields[15].empty() && std::all_of(fields[15].begin(), fields[15].end(), ::isdigit) ? std::stoi(fields[15]) : 0,
-                    fields.size() > 16 && !fields[16].empty() && std::all_of(fields[16].begin(), fields[16].end(), ::isdigit) ? std::stoi(fields[16]) : 0,
-                    fields.size() > 17 ? fields[17] : "",
-                    fields.size() > 18 ? fields[18] : "",
-                    fields.size() > 19 ? fields[19] : "",
-                    fields.size() > 20 ? fields[20] : "",
-                    fields.size() > 21 ? fields[21] : "",
-                    fields.size() > 22 && !fields[22].empty() && std::all_of(fields[22].begin(), fields[22].end(), ::isdigit) ? std::stol(fields[22]) : 0,
-                    fields.size() > 23 ? fields[23] : "",
-                    fields.size() > 24 ? fields[24] : "",
-                    fields.size() > 25 ? fields[25] : "",
-                    fields.size() > 26 ? fields[26] : "",
-                    fields.size() > 27 ? fields[27] : ""
-                );
+                try {
+                    #pragma omp critical
+                    polishedRecords.addRecord(
+                        fields.size() > 0 ? fields[0] : "",
+                        fields.size() > 1 ? fields[1] : "",
+                        borough,
+                        zipCode,
+                        latitude,
+                        longitude,
+                        fields.size() > 6 ? fields[6] : "",
+                        fields.size() > 7 ? fields[7] : "",
+                        fields.size() > 8 ? fields[8] : "",
+                        fields.size() > 9 && !fields[9].empty() && std::all_of(fields[9].begin(), fields[9].end(), ::isdigit) ? std::stoi(fields[9]) : 0,
+                        fields.size() > 10 && !fields[10].empty() && std::all_of(fields[10].begin(), fields[10].end(), ::isdigit) ? std::stoi(fields[10]) : 0,
+                        fields.size() > 11 && !fields[11].empty() && std::all_of(fields[11].begin(), fields[11].end(), ::isdigit) ? std::stoi(fields[11]) : 0,
+                        fields.size() > 12 && !fields[12].empty() && std::all_of(fields[12].begin(), fields[12].end(), ::isdigit) ? std::stoi(fields[12]) : 0,
+                        fields.size() > 13 && !fields[13].empty() && std::all_of(fields[13].begin(), fields[13].end(), ::isdigit) ? std::stoi(fields[13]) : 0,
+                        fields.size() > 14 && !fields[14].empty() && std::all_of(fields[14].begin(), fields[14].end(), ::isdigit) ? std::stoi(fields[14]) : 0,
+                        fields.size() > 15 && !fields[15].empty() && std::all_of(fields[15].begin(), fields[15].end(), ::isdigit) ? std::stoi(fields[15]) : 0,
+                        fields.size() > 16 && !fields[16].empty() && std::all_of(fields[16].begin(), fields[16].end(), ::isdigit) ? std::stoi(fields[16]) : 0,
+                        fields.size() > 17 ? fields[17] : "",
+                        fields.size() > 18 ? fields[18] : "",
+                        fields.size() > 19 ? fields[19] : "",
+                        fields.size() > 20 ? fields[20] : "",
+                        fields.size() > 21 ? fields[21] : "",
+                        fields.size() > 22 && !fields[22].empty() && std::all_of(fields[22].begin(), fields[22].end(), ::isdigit) ? std::stol(fields[22]) : 0,
+                        fields.size() > 23 ? fields[23] : "",
+                        fields.size() > 24 ? fields[24] : "",
+                        fields.size() > 25 ? fields[25] : "",
+                        fields.size() > 26 ? fields[26] : "",
+                        fields.size() > 27 ? fields[27] : ""
+                    );
+                } catch (const std::exception& e) {
+                    std::cerr << "Error adding record: " << e.what() << std::endl;
+                }
             } catch (const std::exception& e) {
-                std::cerr << "Error parsing line: " << line << " - " << e.what() << std::endl;
+                std::cerr << "Error parsing line: " << lines[i] << " - " << e.what() << std::endl;
             }
         }
 
@@ -140,29 +161,35 @@ public:
         while (std::getline(ssPincode, pincode, ',')) {
             pincodes.push_back(static_cast<short>(std::stoi(pincode)));
         }
+        std::cout << "Querying data... startDateUTC: " << startDateUTC << ", endDateUTC: " << endDateUTC << " Borough List : " << commaSeparatedBoroughList << "distance from lat,long" << distance << std::endl;
+        std::cout << "size of polishedRecords : " << polishedRecords.crashDates.size() << std::endl;
 
         #pragma omp parallel for
         for (size_t i = 0; i < polishedRecords.crashDates.size(); ++i) {
             try {
-                long recordEpoch = convertToEpoch(polishedRecords.crashDates[i] + " " + polishedRecords.crashTimes[i]);
+                long recordEpoch = polishedRecords.crashEpochs[i];
                 if (recordEpoch < startEpoch || recordEpoch > endEpoch) {
+                    // std::cout << "skipping record due to epoch" << std::endl;
                     continue;
                 }
 
                 if (!commaSeparatedBoroughList.empty() && 
                     std::find(boroughs.begin(), boroughs.end(), polishedRecords.boroughs[i]) == boroughs.end()) {
+                    // std::cout << "skipping record due to borough" << std::endl;
                     continue;
                 }
 
                 if (lat != 0.0f && lon != 0.0f && distance != 0.0f) {
                     double recordDistance = calculateDistance(lat, lon, polishedRecords.latitudes[i], polishedRecords.longitudes[i]);
                     if (recordDistance > distance) {
+                        // std::cout << "skipping record due to distance" << std::endl;
                         continue;
                     }
                 }
 
                 if (!commaSeparatedPincodeList.empty() && 
                     std::find(pincodes.begin(), pincodes.end(), polishedRecords.zipCodes[i]) == pincodes.end()) {
+                    // std::cout << "skipping record due to pincode" << std::endl;
                     continue;
                 }
 
@@ -170,14 +197,14 @@ public:
                 result.push_back(RawRecord(
                     polishedRecords.crashDates[i],
                     polishedRecords.crashTimes[i],
-                    "", // Location column is redundant
-                    "", // Location column is redundant
+                    getBoroughString(polishedRecords.boroughs[i]), // Convert enum to string
+                    std::to_string(polishedRecords.zipCodes[i]), // Convert zip code to string
                     polishedRecords.latitudes[i],
                     polishedRecords.longitudes[i],
-                    "", // Borough column is replaced by enumerated list
-                    "", // Borough column is replaced by enumerated list
-                    "", // Borough column is replaced by enumerated list
-                    "", // Borough column is replaced by enumerated list
+                    std::to_string(polishedRecords.latitudes[i]) + ", " + std::to_string(polishedRecords.longitudes[i]), // Location
+                    polishedRecords.onStreetNames[i],
+                    polishedRecords.crossStreetNames[i],
+                    polishedRecords.offStreetNames[i],
                     polishedRecords.numPersonsInjured[i],
                     polishedRecords.numPersonsKilled[i],
                     polishedRecords.numPedestriansInjured[i],
@@ -199,11 +226,51 @@ public:
                     polishedRecords.vehicleTypeCode5[i]
                 ));
             } catch (const std::exception& e) {
-                // std::cerr << "Error processing record: " << e.what() << std::endl;
+                std::cerr << "Error processing record: " << e.what() << std::endl;
                 continue;
             }
         }
 
+        // Write the results to a text file
+        std::ofstream outFile("query_results.txt");
+        if (outFile.is_open()) {
+            for (const auto& record : result) {
+                outFile << record.getCrashDate() << ","
+                        << record.getCrashTime() << ","
+                        << record.getBorough() << ","
+                        << record.getZipCode() << ","
+                        << record.getLatitude() << ","
+                        << record.getLongitude() << ","
+                        << record.getLocation() << ","
+                        << record.getOnStreetName() << ","
+                        << record.getCrossStreetName() << ","
+                        << record.getOffStreetName() << ","
+                        << record.getNumberOfPersonsInjured() << ","
+                        << record.getNumberOfPersonsKilled() << ","
+                        << record.getNumberOfPedestriansInjured() << ","
+                        << record.getNumberOfPedestriansKilled() << ","
+                        << record.getNumberOfCyclistsInjured() << ","
+                        << record.getNumberOfCyclistsKilled() << ","
+                        << record.getNumberOfMotoristsInjured() << ","
+                        << record.getNumberOfMotoristsKilled() << ","
+                        << record.getContributingFactorVehicle1() << ","
+                        << record.getContributingFactorVehicle2() << ","
+                        << record.getContributingFactorVehicle3() << ","
+                        << record.getContributingFactorVehicle4() << ","
+                        << record.getContributingFactorVehicle5() << ","
+                        << record.getCollisionId() << ","
+                        << record.getVehicleTypeCode1() << ","
+                        << record.getVehicleTypeCode2() << ","
+                        << record.getVehicleTypeCode3() << ","
+                        << record.getVehicleTypeCode4() << ","
+                        << record.getVehicleTypeCode5() << "\n";
+            }
+            outFile.close();
+        } else {
+            std::cerr << "Error opening file for writing results." << std::endl;
+        }
+
+        std::cout << "size of result : " << result.size() << std::endl;
         return result;
     }
 };

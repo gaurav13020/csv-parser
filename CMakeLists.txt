@@ -3,8 +3,8 @@ cmake_minimum_required(VERSION 3.3)
 project(csv-parser)
 
 # Set the C and C++ compilers
-set(CMAKE_C_COMPILER /opt/homebrew/Cellar/llvm/19.1.7/bin/clang)
-set(CMAKE_CXX_COMPILER /opt/homebrew/Cellar/llvm/19.1.7/bin/clang++)
+set(CMAKE_C_COMPILER /opt/homebrew/bin/gcc-14)
+set(CMAKE_CXX_COMPILER /opt/homebrew/bin/g++-14)
 
 # Set the module path
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/Modules)
@@ -22,9 +22,6 @@ set(SOURCES
     csv-parser-project/src/CSVParser.h
     csv-parser-project/src/CSVParserStage1.h
     csv-parser-project/src/CSVParserStage2.h
-    csv-parser-project/src/CSVParserBase.h
-    csv-parser-project/src/CSVParserStage3.h
-    csv-parser-project/src/CrashRecordPolished.h
     csv-parser-project/src/RawRecord.h 
 
 )

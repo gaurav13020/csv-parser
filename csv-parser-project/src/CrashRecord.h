@@ -1,3 +1,5 @@
+#include <string>
+using namespace std;
 class CrashRecord {
 public:
     CrashRecord(double latitude, double longitude, const std::string& crashDateTime)
